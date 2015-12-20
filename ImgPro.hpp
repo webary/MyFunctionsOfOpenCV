@@ -30,7 +30,8 @@ extern IplImage* find_obj_match;
 
 const int MAXSIZE = 500;
 //Image class
-class Image {
+class Image
+{
 public:
     int width, height, depth;
     IplImage* pimg;
@@ -68,7 +69,8 @@ public:
 #ifdef __AFXWIN_H__
 #pragma region Image Class
 #endif
-Image::Image(IplImage* p) {
+Image::Image(IplImage* p)
+{
     if(p) {
         memcpy(pimg,p,sizeof(IplImage));
         width = p->width;
@@ -78,12 +80,14 @@ Image::Image(IplImage* p) {
         pimg = 0;
 }
 
-Image::Image(cchar* tmpimgstring,int ask,int cls,int color,int show) {
+Image::Image(cchar* tmpimgstring,int ask,int cls,int color,int show)
+{
     pimg = 0;
     loadImg(tmpimgstring, ask, cls, color, show);
 }
 #ifdef __AFXWIN_H__
-Image::Image(CString& tmpimgstring,int ask,int cls,int color,int show) {
+Image::Image(CString& tmpimgstring,int ask,int cls,int color,int show)
+{
     pimg = 0;
     loadImg((LPSTR)(LPCTSTR)tmpimgstring, ask, cls, color, show);
 }
@@ -91,7 +95,8 @@ Image::Image(CString& tmpimgstring,int ask,int cls,int color,int show) {
 //载入图片
 #ifndef __AFXWIN_H__
 #include<io.h>			//access()
-IplImage *Image::loadImg(cchar* tmpimgName,int ask,int cls,int color,int show) {
+IplImage *Image::loadImg(cchar* tmpimgName,int ask,int cls,int color,int show)
+{
     releaseImg();
     if(tmpimgName==0 || tmpimgName[0]==0)
         return 0;
@@ -154,15 +159,16 @@ IplImage *Image::loadImg(cchar* tmpimgName,int ask,int cls,int color,int show) {
     width  = pimg->width;
     height = pimg->height;
     depth  = pimg->depth;
-	if(width>MAXSIZE || height>MAXSIZE){
-		cout<<"图像过大，暂时无法处理"<<endl;
-		releaseImg();
-	}
+    if(width>MAXSIZE || height>MAXSIZE) {
+        cout<<"图像过大，暂时无法处理"<<endl;
+        releaseImg();
+    }
     return pimg;
 }
 #else
 #include"Shlwapi.h"		//PathFileExists()
-IplImage *Image::loadImg(cchar* tmpimgName,int ask/*=1*/,int cls/*=1*/,int color/*=1*/,int show/*=1*/) {
+IplImage *Image::loadImg(cchar* tmpimgName,int ask/*=1*/,int cls/*=1*/,int color/*=1*/,int show/*=1*/)
+{
     if(tmpimgName==0 || tmpimgName[0]==0)
         return 0;
     char imgName[200], tempName[200];
@@ -226,12 +232,14 @@ IplImage *Image::loadImg(cchar* tmpimgName,int ask/*=1*/,int cls/*=1*/,int color
     return pimg;
 }
 
-IplImage *Image::loadImg(CString& tmpimgstring,int ask/*=1*/,int cls/*=1*/,int color/*=1*/,int show/*=1*/) {
+IplImage *Image::loadImg(CString& tmpimgstring,int ask/*=1*/,int cls/*=1*/,int color/*=1*/,int show/*=1*/)
+{
     return loadImg((LPSTR)(LPCTSTR)tmpimgstring,ask,cls,color,show);
 }
 #endif
 //保存图片像素信息到文件或数组
-void Image::saveRGB(cchar *fileOutName/* = 0*/) {
+void Image::saveRGB(cchar *fileOutName/* = 0*/)
+{
     if(pimg==0)
         return;
     uchar* data = (uchar*)pimg->imageData;
@@ -269,7 +277,8 @@ void Image::saveRGB(cchar *fileOutName/* = 0*/) {
 }
 
 //保存当前的RGB数组到IplImage指针中
-void Image::saveIplImage() {
+void Image::saveIplImage()
+{
     uchar* data = (uchar*)pimg->imageData;
     if(pimg->nChannels==3) {
         for( int y = 0; y < pimg->height; y++ )
@@ -286,7 +295,8 @@ void Image::saveIplImage() {
 }
 
 //输出图片到本地文件，第二个参数是选择是否再次读取RGB值
-void Image::outputImg(cchar* imgOutName,int readAgain/* = 1*/) {
+void Image::outputImg(cchar* imgOutName,int readAgain/* = 1*/)
+{
     if(imgOutName[0]==0 || pimg==0)
         return;
     if(readAgain)
@@ -301,12 +311,14 @@ void Image::outputImg(cchar* imgOutName,int readAgain/* = 1*/) {
 }
 
 //保存图片到文件
-void Image::saveImg(cchar* imgSaveName) {
+void Image::saveImg(cchar* imgSaveName)
+{
     outputImg(imgSaveName,0);
 }
 
 //显示图片
-int Image::showImg(cchar* str/* = "图片显示"*/,cchar* ss/*"显示图像出错"*/,int pause/*=1*/) {
+int Image::showImg(cchar* str/* = "图片显示"*/,cchar* ss/*"显示图像出错"*/,int pause/*=1*/)
+{
     if(pimg==0) {
 #ifdef __AFXWIN_H__
         MessageBox(NULL,"图像指针无效，请先载入有效图像后再使用该功能",ss,MB_ICONSTOP);
@@ -323,20 +335,23 @@ int Image::showImg(cchar* str/* = "图片显示"*/,cchar* ss/*"显示图像出错"*/,int p
 }
 
 //释放图片内存指针
-void Image::releaseImg() {
+void Image::releaseImg()
+{
     if(pimg) {
         cvReleaseImage(&pimg);
         pimg = 0;
     }
 }
 
-inline uchar Image::getGray(unsigned i,unsigned j)const {
+inline uchar Image::getGray(unsigned i,unsigned j)const
+{
     //return (.3*R[i][j]+.6*G[i][j]+.1*B[i][j]+1)/3;
     return i<MAXSIZE && j<MAXSIZE ? (R[i][j]+G[i][j]+B[i][j]+1)/3 : 0;
 }
 
 //像素取反
-void Image::reverseRGB(int th) {
+void Image::reverseRGB(int th)
+{
     for(int i=0; i<height; i++)
         for(int j=0; j<width; j++) {
             R[i][j] = R[i][j]>th?0 : 255 - R[i][j];
@@ -346,14 +361,16 @@ void Image::reverseRGB(int th) {
 }
 
 //灰度化图像
-void Image::toGray() {
+void Image::toGray()
+{
     for(int i=0; i<height; i++)
         for(int j=0; j<width; j++)
             R[i][j]=G[i][j]=B[i][j] = getGray(i,j);
 }
 
 //控制并滤除偏白（亮度较高）的噪声点
-void Image::controlWhtieNoise(int th) {
+void Image::controlWhtieNoise(int th)
+{
     for(int i=0; i<height; i++)
         for(int j=0; j<width; j++)
             //if(R[i][j]>th && G[i][j]>th && B[i][j]>th)
@@ -363,7 +380,8 @@ void Image::controlWhtieNoise(int th) {
                 R[i][j] = G[i][j] = B[i][j] = (R[i][j]+G[i][j]+B[i][j]+1)/3;
 }
 
-Image::Image(const Image& img) {
+Image::Image(const Image& img)
+{
     memcpy(pimg,img.pimg,sizeof(*pimg));
     width  = pimg->width;
     height = pimg->height;
@@ -371,7 +389,8 @@ Image::Image(const Image& img) {
 }
 
 //最大类间方差算法 将灰度图像灰度级分割(注意:传入的需要是灰度图像数据)
-int Image::Otsu()const {
+int Image::Otsu()const
+{
     int height=pimg->height, width=pimg->width, threshold, i, j;
     double histogram[256] = {0};
     for(i=0; i < height; i++) {
@@ -399,7 +418,8 @@ int Image::Otsu()const {
 }
 
 //将图片直方图均衡化处理--利用cv库函数--需要释放该指针
-IplImage* Image::equalizeHist(int saveFile)const {
+IplImage* Image::equalizeHist(int saveFile)const
+{
     if(pimg==0)
         return 0;
     IplImage* pGray = cvCreateImage(cvGetSize(pimg),pimg->depth,1);
@@ -420,7 +440,8 @@ IplImage* Image::equalizeHist(int saveFile)const {
 }
 
 //将图片直方图均衡化处理--利用自编函数--需要释放该指针
-IplImage* Histeq(const Image& _img,int saveFile=0) {
+IplImage* Histeq(const Image& _img,int saveFile=0)
+{
     IplImage* img = _img.pimg;
     if(img==0)
         return 0;
@@ -465,7 +486,8 @@ IplImage* Histeq(const Image& _img,int saveFile=0) {
 }
 
 //将图片直方图均衡化处理--结果保存在自身指针中
-void Image::Histeq_self(bool save) {
+void Image::Histeq_self(bool save)
+{
     saveRGB();
     controlWhtieNoise(Otsu());//更改RGB：用自动阈值去噪
     reverseRGB();			//取反RGB
@@ -489,7 +511,8 @@ void Image::Histeq_self(bool save) {
 
 
 //轻重比比较类
-class WM {
+class WM
+{
     int _n_,_m_,each_part,tran,th_;
     uchar pp[MAXSIZE*MAXSIZE];	//用来读取数组的模板
     uchar V[MAXSIZE*MAXSIZE];	//灰度数组
@@ -615,7 +638,8 @@ public:
     }
 };
 
-void matchWeight(cchar* file1,cchar* file2,double* mw,int show,int n,int m) {
+void matchWeight(cchar* file1,cchar* file2,double* mw,int show,int n,int m)
+{
     WM wm1(n,m),wm2(n,m);
     float res[2][10000]= {0};
     Image img1(file1,0,0,1,show);
@@ -637,11 +661,12 @@ void matchWeight(cchar* file1,cchar* file2,double* mw,int show,int n,int m) {
 
 
 // 将一幅图缩放和旋转变换后保存到另一幅图中
-void imRotate(const IplImage *src,IplImage *&dst,double scale=1,double angle=0,CvPoint2D32f center=cvPoint2D32f(-1,-1)) {
+void imRotate(const IplImage *src,IplImage *&dst,double scale=1,double angle=0,CvPoint2D32f center=cvPoint2D32f(-1,-1))
+{
     if(dst==0)
         return;
     if(src->width == dst->width && src->height == dst->height
-            &&src->depth == dst->depth &&src->nChannels == dst->nChannels) {
+       &&src->depth == dst->depth &&src->nChannels == dst->nChannels) {
         CvMat *mapMatrix = cvCreateMat(2,3,CV_32FC1);
         if(center.x==-1 && center.y==center.x)
             center = cvPoint2D32f(src->width/2,src->height/2);
