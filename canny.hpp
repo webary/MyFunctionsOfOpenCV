@@ -1,14 +1,17 @@
 /**
- * @description: ¸ÃÍ·ÎÄ¼şÒªÓÃÓÚcannyËã×Ó±ßÔµ¼ì²â
+ * @description: è¯¥å¤´æ–‡ä»¶è¦ç”¨äºcannyç®—å­è¾¹ç¼˜æ£€æµ‹
  * @auto:webary & JingWen,Wang
  * @lasted update time: 2014-7-7 21:00
  */
-#pragma once
-#ifndef _CANNY_H_
-#define _CANNY_H_
 
-const double PI=3.1415,P1=-PI/2,P2=-PI*3/8,P3=-PI/8,P4=PI/8,P5=3*PI/8,P6=PI/2;
-//½«Í¼ÏñÏñËØ×ö»Ò¶È´¦Àí
+#pragma once
+#ifndef _CANNY_HPP_
+#define _CANNY_HPP_
+
+#include "imgpro.h"
+
+static const double PI=3.1415,P1=-PI/2,P2=-PI*3/8,P3=-PI/8,P4=PI/8,P5=3*PI/8,P6=PI/2;
+//å°†å›¾åƒåƒç´ åšç°åº¦å¤„ç†
 void gray()
 {
     unsigned char d;
@@ -21,7 +24,8 @@ void gray()
         B[row][line] = d;
     }
 }
-// ½«ÏñËØÊı¾İ´æÈëµ½Ò»¸öÕûĞÎÊı×éÖĞ
+
+// å°†åƒç´ æ•°æ®å­˜å…¥åˆ°ä¸€ä¸ªæ•´å½¢æ•°ç»„ä¸­
 void saveToArr()
 {
     int i,j,row,line;
@@ -33,7 +37,8 @@ void saveToArr()
         data[i][j++] = B[row][line];
     }
 }
-//½«±ä»¯ºóµÄÏñËØĞÅÏ¢ÖØĞÂ´æµ½RGBÖĞÈ¥
+
+//å°†å˜åŒ–åçš„åƒç´ ä¿¡æ¯é‡æ–°å­˜åˆ°RGBä¸­å»
 void dataToRGB()
 {
     int i=0,j=0,row,line;
@@ -46,27 +51,28 @@ void dataToRGB()
         }
     }
 }
-//½«data´æµ½data2
+
+//å°†dataå­˜åˆ°data2
 void Gaosi(int data[1120000][9],int data2[1120000][9])
 {
     int A, B,C;// A(x-1, y-1) B(x, y-1),c(x+1,y-1)
     int D,E,F;// D(x-1, y), E(x, y) ,F(X+1,Y)
     int G,H,I;//G(X-1,Y+1),H(X,Y+1),I(X+1,Y+1)
     int x,y,num=width;
-    for (x = 0; x < width; x++) { //µÚÒ»ĞĞÏñËØµãµÄRGBÖµ¾ùÎª0£¬²»´¦Àí×îÉÏ±ßºÍ×î×ó±ß
+    for (x = 0; x < width; x++) { //ç¬¬ä¸€è¡Œåƒç´ ç‚¹çš„RGBå€¼å‡ä¸º0ï¼Œä¸å¤„ç†æœ€ä¸Šè¾¹å’Œæœ€å·¦è¾¹
         data2[x][0]=0;
         data2[x][1]=0;
         data2[x][2]=0;
     }
-    // ²»´¦Àí×îÉÏ±ßºÍ×î×ó±ß
+    // ä¸å¤„ç†æœ€ä¸Šè¾¹å’Œæœ€å·¦è¾¹
     for (y = 1; y < height-1; y++) {
-        // Ö¸ÏòÃ¿ĞĞµÚÒ»ÁĞ
+        // æŒ‡å‘æ¯è¡Œç¬¬ä¸€åˆ—
         data2[num][0]=0;
         data2[num][1]=0;
         data2[num][2]=0;
         num++;
         for (x = 1; x < width; x++) {
-            for(int a=0; a<3; a++) { //½«GRBµÄÖµ¼ÆËãÖ®ºóÖØĞÂ´æÈë
+            for(int a=0; a<3; a++) { //å°†GRBçš„å€¼è®¡ç®—ä¹‹åé‡æ–°å­˜å…¥
                 A = data[num- width - 1][a];
                 B = data[num-width][a];
                 C =data[num-width+1][a];
@@ -85,56 +91,58 @@ void Gaosi(int data[1120000][9],int data2[1120000][9])
             num++;
         }
     }
-//²»´¦Àí×îºóÒ»ĞĞµÄÏñËØĞÅÏ¢£¬È«²¿Îª0
+    //ä¸å¤„ç†æœ€åä¸€è¡Œçš„åƒç´ ä¿¡æ¯ï¼Œå…¨éƒ¨ä¸º0
     for (x = 0; x < width; x++) {
         data2[num++][0]=0;
         data2[num++][1]=0;
         data2[num++][2]=0;
     }
 }
-//ÓÃÒ»½×Æ«µ¼ÓĞÏŞ²î·Ö¼ÆËãÌİ¶È·ùÖµºÍ·½Ïò.
+
+//ç”¨ä¸€é˜¶åå¯¼æœ‰é™å·®åˆ†è®¡ç®—æ¢¯åº¦å¹…å€¼å’Œæ–¹å‘.
 void tidu(int data2[1120000][9],float direction[1120000])
 {
     int A, B;// A(x-1, y-1) B(x, y-1)
     int C, D;// C(x-1, y)   D(x, y)
     int x,y,num=width+1;
-    for (x = 0; x < width; x++) { //µÚÒ»ĞĞÏñËØµãµÄRGBÖµ¾ùÎª0£¬²»´¦Àí×îÉÏ±ßºÍ×î×ó±ß
+    for (x = 0; x < width; x++) { //ç¬¬ä¸€è¡Œåƒç´ ç‚¹çš„RGBå€¼å‡ä¸º0ï¼Œä¸å¤„ç†æœ€ä¸Šè¾¹å’Œæœ€å·¦è¾¹
         data2[x][0]=0;
         data2[x][1]=0;
         data2[x][2]=0;
-        direction[x]=0;//¼ÇÂ¼Ìİ¶È·½Ïò
+        direction[x]=0;//è®°å½•æ¢¯åº¦æ–¹å‘
     }
     for (y = 1; y < height; y++) {
-        // Ö¸ÏòÃ¿ĞĞµÚÒ»ÁĞ
+        // æŒ‡å‘æ¯è¡Œç¬¬ä¸€åˆ—
         data2[num][0]=0;
         data2[num][1]=0;
         data2[num][2]=0;
         direction[num]=0;
         num++;
         for (x = 1; x < width; x++) {
-            for(int a=0; a<3; a++) { //½«GRBµÄÖµ¼ÆËãÖ®ºóÖØĞÂ´æÈë
+            for(int a=0; a<3; a++) { //å°†GRBçš„å€¼è®¡ç®—ä¹‹åé‡æ–°å­˜å…¥
                 A = data[num- width - 1][a];
                 B = data[num-width][a];
                 C = data[num-1][a];
                 D = data[num][a];
                 int temp1=(int)((B-A+D-C)/2);
                 int temp2=(int)((C-A+D-B)/2);
-                int mxy=(int)(sqrt(temp1*temp1+temp2*temp2)); //mxyÎªÌİ¶È
+                int mxy=(int)(sqrt(temp1*temp1+temp2*temp2)); //mxyä¸ºæ¢¯åº¦
                 double mm=(double)temp1/(double)temp2;
                 direction[num]=atan(mm);
-                data2[num][a]=mxy;   // data2ÀïÃæ´æµÄÊÇÌİ¶È
+                data2[num][a]=mxy;   // data2é‡Œé¢å­˜çš„æ˜¯æ¢¯åº¦
             }
             num++;
         }
     }
 }
-//·Ç¼«´óÖµÒÖÖÆ  3*3µÄÔ²ĞÎ£¬ÓÃ½Ç¶ÈÅĞ¶Ï
+
+//éæå¤§å€¼æŠ‘åˆ¶  3*3çš„åœ†å½¢ï¼Œç”¨è§’åº¦åˆ¤æ–­
 void Non_maxmal(int data2[1120000][9],float direction[1120000])
 {
     int A,B,C;// A(x-1, y-1) B(x, y-1),c(x+1,y-1)
     int D,E,F;// D(x-1, y), E(x, y) ,F(X+1,Y)
     int G,H,I;// G(X-1,Y+1),H(X,Y+1),I(X+1,Y+1)
-    int x,y,num=width+1;//ÏÈ°ÑµÚÒ»ĞĞ¿Õ³öÀ´ºÍµÚÒ»ÁĞ¿Õ³öÀ´,²»²ÎÓëÒÖÖÆ,×îºóÒ»ĞĞÒ²²»²ÎÓë¼ÆËã
+    int x,y,num=width+1;//å…ˆæŠŠç¬¬ä¸€è¡Œç©ºå‡ºæ¥å’Œç¬¬ä¸€åˆ—ç©ºå‡ºæ¥,ä¸å‚ä¸æŠ‘åˆ¶,æœ€åä¸€è¡Œä¹Ÿä¸å‚ä¸è®¡ç®—
     for(y=1; y<height-1; y++) {
         for(x=1; x<width; x++) {
             for(int a=0; a<3; a++) {
@@ -149,23 +157,23 @@ void Non_maxmal(int data2[1120000][9],float direction[1120000])
                 I = data[num+width+1][a];
 
                 if(P1<=direction[num]<P2) {
-                    //±È½ÏBH
+                    //æ¯”è¾ƒBH
                     if(E<B&&E<H)
                         data2[num][a]=0;
                 } else if(P2<=direction[num]<P3) {
-                    //±È½ÏAI
+                    //æ¯”è¾ƒAI
                     if(E<A&&E<I)
                         data2[num][a]=0;
                 } else if(P3<=direction[num]<P4) {
-                    //±È½ÏDF
+                    //æ¯”è¾ƒDF
                     if(E<D&&E<F)
                         data2[num][a]=0;
                 } else if(P4<=direction[num]<P5) {
-                    //±È½ÏGC
+                    //æ¯”è¾ƒGC
                     if(E<G&&E<C)
                         data2[num][a]=0;
                 } else {
-                    //±È½ÏBH
+                    //æ¯”è¾ƒBH
                     if(E<B&&E<H)
                         data2[num][a]=0;
                 }
@@ -173,24 +181,26 @@ void Non_maxmal(int data2[1120000][9],float direction[1120000])
         }
     }
 }
-//ÉèÖÃÁ½¸öãĞÖµ,²¢È·¶¨Ã¿¸öÏñËØµãÊÇ·ñÎª±ßÔµ
+
+//è®¾ç½®ä¸¤ä¸ªé˜ˆå€¼,å¹¶ç¡®å®šæ¯ä¸ªåƒç´ ç‚¹æ˜¯å¦ä¸ºè¾¹ç¼˜
 void yuzhi(int th1,int th2)
 {
-    if(th1<th2) swap(th1,th2);		//È·±£th1 >= th2
+    if(th1<th2) swap(th1,th2);		//ç¡®ä¿th1 >= th2
     for(int i=0,num=0; i<height; i++)
         for(int j=0,a; j<width; j++) {
             for(a=0; a<3; a++)
-                if(data2[num][a]<th2) { //Èç¹û¸ÃµãĞ¡ÓÚµÍãĞÖµ£¬Ôò±ê¼ÇÎªÎ±±ßÔµµã
+                if(data2[num][a]<th2) { //å¦‚æœè¯¥ç‚¹å°äºä½é˜ˆå€¼ï¼Œåˆ™æ ‡è®°ä¸ºä¼ªè¾¹ç¼˜ç‚¹
                     data2[num][a+3]=Unedge;
-                    data2[num][a]=0; //Î±±ßÔµµãÖ±½Ó¸³ÖµÎª0
-                } else if(data[num][a]>th1) //¸ßÓÚ¸ßãĞÖµ£¬ÔòÎª±ßÔµµã
+                    data2[num][a]=0; //ä¼ªè¾¹ç¼˜ç‚¹ç›´æ¥èµ‹å€¼ä¸º0
+                } else if(data[num][a]>th1) //é«˜äºé«˜é˜ˆå€¼ï¼Œåˆ™ä¸ºè¾¹ç¼˜ç‚¹
                     data2[num][a+3]=Edge;
                 else
-                    data2[num][a+3]=Unsure; //½éÓÚÆäÖĞ£¬ÔòÎª²»È·¶¨µÄÖµ
+                    data2[num][a+3]=Unsure; //ä»‹äºå…¶ä¸­ï¼Œåˆ™ä¸ºä¸ç¡®å®šçš„å€¼
             num++;
         }
 }
-//ãĞÖµÅĞ¶ÏÍêÖ®ºó½øĞĞÁ¬½Ó
+
+//é˜ˆå€¼åˆ¤æ–­å®Œä¹‹åè¿›è¡Œè¿æ¥
 void connect(bool saveEdge = 0)
 {
     FILE *fp;
@@ -198,7 +208,7 @@ void connect(bool saveEdge = 0)
         fp=fopen("edge.txt","w");
         fprintf(fp,"\n");
     }
-    for(int i=1,j,num; i<height; i++) { //½øĞĞÈ«¾ÖËÑÑ°£¬ÅĞ¶Ï²»È·¶¨µãÊÇ·ñÎª±ßÔµµã
+    for(int i=1,j,num; i<height; i++) { //è¿›è¡Œå…¨å±€æœå¯»ï¼Œåˆ¤æ–­ä¸ç¡®å®šç‚¹æ˜¯å¦ä¸ºè¾¹ç¼˜ç‚¹
         if(saveEdge) fprintf(fp," ");
         for(j=1; j<width; j++) {
             num = i*width+j;
@@ -208,7 +218,7 @@ void connect(bool saveEdge = 0)
                        data2[num-width+1][a+3]==Edge||data2[num-1][a+3]==Edge||
                        data2[num+1][a+3]==Edge||data2[num+width-1][a+3]==Edge||
                        data2[num+width][a+3]==Edge||data2[num+width+1][a+3]==Edge)
-                        data2[num][a+3] = Edge;//Âú×ãÒÔÉÏÌõ¼şÔòÎª±ßÔµµã
+                        data2[num][a+3] = Edge;//æ»¡è¶³ä»¥ä¸Šæ¡ä»¶åˆ™ä¸ºè¾¹ç¼˜ç‚¹
                     else {
                         data2[num][a+3]=Unedge;
                         data2[num][a]=0;
@@ -225,17 +235,19 @@ void connect(bool saveEdge = 0)
     }
     if(saveEdge) fclose(fp);
 }
-//½«±ßÔµµãÓë·Ç±ßÔµµã¼«Öµ´¦Àí,±ßÔµµã¸³ÖµÎª°×É«
+
+//å°†è¾¹ç¼˜ç‚¹ä¸éè¾¹ç¼˜ç‚¹æå€¼å¤„ç†,è¾¹ç¼˜ç‚¹èµ‹å€¼ä¸ºç™½è‰²
 void lighter()
 {
     int num=width,i,j;
-    for(i=1; i<height; i++)			//½øĞĞÈ«¾ÖËÑÑ°£¬ÅĞ¶Ï²»È·¶¨µãÊÇ·ñÎª±ßÔµµã
+    for(i=1; i<height; i++)			//è¿›è¡Œå…¨å±€æœå¯»ï¼Œåˆ¤æ–­ä¸ç¡®å®šç‚¹æ˜¯å¦ä¸ºè¾¹ç¼˜ç‚¹
         for(j=1,num++; j<width; j++,num++)
             for(int a=0; a<3; a++)
                 if(data2[num][a+3]==Edge)
                     data2[num][a]=255;
 }
-//cannyËã×Ó±ßÔµ¼ì²â
+
+//cannyç®—å­è¾¹ç¼˜æ£€æµ‹
 void canny(int th1=65,int th2=12,int saveEdge=0)
 {
     Gaosi(data,data2);
